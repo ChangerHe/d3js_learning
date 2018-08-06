@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>core - d3.select(selector)</title>
+		<style type="text/css">
+			table {
+				margin: 20px;
+				background-color: #eee;
+				font-weight:bold;
+			}
+
+			td {
+				padding: 8px;
+			}
+			
+			td.selected {
+				background-color: #FF5C00;
+				color: white;
+			}
+
+			rect.oven {
+				fill: blue;
+			}
+
+			rect.odd {
+				fill: yellow;
+			}
+
+			rect.stroke {
+				fill: black;
+			}
+		</style>
+	</head>
+	<script type="text/javascript" src="../d3.js"></script>
+	<div style="width:300px;height:100px;">
+		<table>
+			<tr>
+				<td>苹果</td>	
+				<td>香蕉</td>
+				<td>西瓜</td>
+			</tr>
+			<tr>
+				<td>桃子</td>	
+				<td id="test">草莓</td>
+				<td>菠萝</td>
+			</tr>
+		</table>
+
+		<table>
+			<tr>
+				<td>可乐</td>
+				<td>牛奶</td>
+			</tr>
+			<tr>
+				<td>绿茶</td>
+				<td class="test">啤酒</td>
+			</tr>
+		</table>
+	</div>
+
+	<script>
+		// d3.selectAll("td").classed("selected",true);	//设置第一个选中的<td>标签元素的背景色为橘黄色，字体颜色为白色
+		// d3.select("#test").classed("selected",true);	//设置第一个ID为"#test"的元素的背景色为橘黄色，字体颜色为白色
+		// d3.select(".test").classed("selected",true);	//设置第一个类名为".test"的标签元素的背景色为橘黄色，字体颜色为白色
+
+		d3.selectAll('td')
+		.on('click', function() {
+			// d3.select(this).classed('selected', true)
+			d3.select(this).style('color', 'green')
+		})
+
+		//绘制矩形的数据
+		var dataset = [ 5, 10, 15, 20, 25 ];  
+			
+		//创建SVG
+		var svg = d3.select("body")  
+				.append("svg")  
+				.attr("width", 960)	//一次设置一个属性值
+				.attr("height", 500);
+
+		//创建矩形
+		rects=svg.selectAll("rect")
+				.data(dataset)
+				.enter()
+				.append("rect")
+				.attr({	//一次设置多个属性值
+					"name": 'aaa',
+					"x":function(d,i){ return 20+i*160/dataset.length;},	//使用函数设置属性值
+					"y":function(d){ return 250 - 10*d;},
+					"width":20,
+					"height":function(d){ return 10*d;}
+				})
+				.classed({
+					'even': (d, i) => i % 2 ? true:false,
+					'odd': (d, i) => i % 2 ? false : true
+				})
+				.attr("fill","steelblue")
+				.on('click', function() {
+					var rect = d3.select(this)
+					if (rect.classed('stroke')) {
+						rect.classed('stroke', false)
+					} else {
+						rect.classed('stroke', true)
+					}
+				})
+	</script>
