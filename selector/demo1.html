@@ -57,6 +57,34 @@
 				<td class="test">啤酒</td>
 			</tr>
 		</table>
+
+		<svg width='300' height='300' id="test_svg1">
+			<rect class="stroke" width='20' height='50' fill='yellow'></rect>
+			<rect class="stroke" width='20' height='50' fill='yellow'></rect>
+			<circle class="stroke" r='20' cx='50' cy='yellow'></circle>
+		</svg>
+
+		<!-- <checkbox id="checkbox"></checkbox> -->
+		<input type="checkbox" name="" id="checkbox">
+		<h1 id="test_h1">11111111</h1>
+		<h2 id="test_h2">22222222</h2>
+		<h3 id="test_h3">33333333</h3>
+
+		<div class="test_div1" data-user="testUser1"></div>
+
+		<div class="test_div2">
+			<button class="test_btn1">排序</button>
+			<p>A2</p>	
+			<p>A4</p>	
+			<p>A7</p>	
+			<p>A1</p>	
+
+		</div>
+		<div class="test_div3"></div>
+
+		<!-- <div class="test_div4">
+
+		</div> -->
 	</div>
 
 	<script>
@@ -91,10 +119,12 @@
 					"width":20,
 					"height":function(d){ return 10*d;}
 				})
+				// 通过判断的方式对样式进行增加或者删除
 				.classed({
 					'even': (d, i) => i % 2 ? true:false,
 					'odd': (d, i) => i % 2 ? false : true
 				})
+				// 需要注意的是, 不同于css, 行内样式的优先级是低于样式优先级的
 				.attr("fill","steelblue")
 				.on('click', function() {
 					var rect = d3.select(this)
@@ -104,4 +134,85 @@
 						rect.classed('stroke', true)
 					}
 				})
+				.property({
+					'foo': 'bar',
+					'baz': 'qux'
+				})
+
+		d3.select('#checkbox').property({
+			'foo': 'bar',
+			'checked': false
+		})
+
+		// d3.select('#test_h1').text('selection.text([value])')
+		d3.select('#test_h1').text(function() {
+			return 'new text: ' + d3.select(this).text()
+		})
+
+		// d3.select('#test_h2').html('<span style="color:red;">333</span>')
+		d3.select('#test_h2').html(function(d, i) {
+			let old = d3.select(this).html()
+			return old + '<span style="color:red;">333</span>'
+		})
+		// 以上的html属性需要注意的是, .html()属性只支持html元素, 而svg元素及其他非html元素则是不支持的
+
+		// 为内容中添加额外的内容
+		d3.select('#test_h3').append('svg').append('svg:rect').attr({
+			width: 100,
+			height: 100,
+			x: 0,
+			y: 40,
+			fill: 'red'
+		})
+		// 在rect前添加circle元素
+		d3.select('#test_h3').select('svg').insert('circle', 'rect').attr({
+			r: 20,
+			fill: 'blue',
+			cx: 20,
+			cy: 20
+		})
+
+		// 删除掉rect元素
+		d3.select('#test_h3').select('svg').select('rect').remove()
+
+		var matrix = [
+			  [11975,  5871, 8916, 2868],
+			  [ 1951, 10048, 2060, 6171],
+			  [ 8010, 16145, 8090, 8045],
+			  [ 1013,   990,  940, 6907]
+			];
+		// 为dom节点插入一个二维数组
+		let tr = d3.select('.test_div1').append('table').selectAll('tr').data(matrix).enter().append('tr')
+		let td = tr.selectAll('td').data(function(d) {return d}).enter().append('td').text((d) => d)
+		console.dir(tr, 'tr')
+		console.dir( td, 'td')
+
+		let testUser1 = d3.select('.test_div1').datum(function() {console.log(this.dataset.user, 'dataset');return this.dataset}).text(function(d) {console.log(d.user, 'user');return d.user})
+		// console.log(testUser1, 'data')
+
+		// 初始化
+		var data4 = [
+				{name: "A2", value: 2},
+				{name: "A1", value: 1},
+				{name: "A5", value: 5},
+				{name: "A4", value: 4},
+			];
+		d3.select('.test_btn1').on('click', function(d, i) {
+			// d3.select('.test_div2').selectAll('p').sort(function(a, b) {
+			// 	console.log(a, b, 'a b')
+			// 	return a.value - b.value
+			// })
+			console.log(1111)
+			d3.select('#test_svg1').selectAll('rect').attr({
+				fill: 'red'
+			})
+			d3.select('.test_div3').selectAll('p').sort(function(a, b) {
+				return a.value - b.value
+			})
+		})
+		d3.select('.test_div3').select('div').data(data4).enter().append('p').html(function(d) {
+			console.log(d.name, 'name')
+			return `<h2>${d.name}</h2>`
+		})
+
 	</script>
